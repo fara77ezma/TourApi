@@ -6,8 +6,10 @@ const Tour=require('../models/Tour');
 
 dotenv.config({path:'./config/config.env'});
 
-mongoose.connect(process.env.DATABASE,{
+mongoose.connect(process.env.MONGO_URI,{
 })
+mongoose.set('setDefaultsOnInsert', true);
+
 // read data from files
 const tours=JSON.parse(fs.readFileSync(`${__dirname}/tours.json`,'utf-8'));//conver json data to javascript object
 
@@ -32,5 +34,5 @@ const deletee=async()=>{
 console.log(e);
   }
 }
-if(process.argv[2]==='--import') iimport();
-else if(process.argv[2]==='--delete') deletee();
+if(process.argv[2]==='--import') iimport(); //node data/import.js --import
+else if(process.argv[2]==='--delete') deletee(); //node data/import.js --delete
