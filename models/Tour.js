@@ -119,7 +119,7 @@ Tour.pre(/^find/,function(next){ // this reqular expression it to make this midl
 })
 Tour.post(/^find/,function(docs,next){ 
  console.log(`Time tooks for this query ${Date.now()-this.start} ms`);
- console.log(docs);
+ //console.log(docs);
   next();// to get to the next (pre) midlware
 })
 
