@@ -37,6 +37,10 @@ const User=new userSchema({
     type:String,
     
   },
+  passwordChangedAt: {
+    type:Date,
+    default:Date.now(),
+},
 })
 User.pre('save',async function(next){
   //only run the function when the password is modeified
@@ -49,8 +53,19 @@ this.passwordConfirm=undefined; // we only want it to the validation process and
 next();
 
 })
-User.methods.correctPasswords= async function(candidatePassword,userPassword) //this called an instance function it will be available in every user document 
+User.methods.correctPasswords= async function(candidatePassword,userPassword) //this called an instance function it will be available in every user document or instance
 {
 return await bcrypt.compare(candidatePassword,userPassword);
+}
+User.methods.changedPasswordAfterToken=function(JWTTimestamp)
+{
+  if(this.passwordChangedAt) //this refer to the current document
+  {
+     const changedTimestamp=parseInt(this.passwordChangedAt.getTime()/1000,10); // getTime give the time in millisecond and JWT iat give time in seconds so we have to convert all in seconds and convert it to int number for compersion //10 for base 10 (decimal numbers)
+    console.log(JWTTimestamp,changedTimestamp);
+    return JWTTimestamp < changedTimestamp;
+  }
+  //False means not changed
+  return false;
 }
 module.exports=mongoose.model('User',User);

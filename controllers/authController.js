@@ -5,6 +5,7 @@ const {promisify}= require('util');
 
 
 const User = require('../models/User');
+const { decode } = require('querystring');
 const signToken=(id)=>{
  return   jwt.sign({id},process.env.JWT_SECRET,{
         expiresIn:process.env.JWT_EXPIRS_IN,//will add some additional data to payload but that's okay
@@ -66,9 +67,19 @@ const protect=catchAsync(async(req,res,next)=>{
      }
     //2)verification token
       const decoded=await promisify(jwt.verify)(token,process.env.JWT_SECRET); //because jwt use callbacks and doesn't use promises so we use promisify to make it use promises
-      console.log(decoded);
-    //3)check if user still exists
+      //console.log(decoded);
+    //3)check if user still exists 
+      const currentUser=await User.findById(decoded.id);
+      if(!currentUser) return next(new AppError('The user belonging to this token does no longer exist',401));
     //4)check if user changed password after the token was issued
+       if(currentUser.changedPasswordAfterToken(decoded.iat)){
+        return next(new AppError('User recently change password! Please log in again.',401));
+
+       }
+
+     //put entire user data in the request
+     req.user=currentUser;
+          //GRANT acess to protected route  
 
     next();
 })
