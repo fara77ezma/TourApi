@@ -18,6 +18,7 @@ const signup=catchAsync(async (req,res,next)=>{
         email:req.body.email,
         password:req.body.password,
         passwordConfirm:req.body.passwordConfirm,
+        role:req.body.role,
     });
     const token=signToken(newUser._id);
     
@@ -83,9 +84,21 @@ const protect=catchAsync(async(req,res,next)=>{
 
     next();
 })
-module.exports={
+const  restrictTo= (...roles)=>{ //wrapper function contains our midlware function to make the midelware function deals with the paramerters path through the function 
+return catchAsync(async(req,res,next)=>{
+ //roles ['admin','lead-guide']
+ if(!roles.includes(req.user.role))// includes is a javascript array function return true if the array have the value passed in and false otherwise
+ { 
+  return next(new AppError('Your do not have permission to perform this action',403));
+ }
+ next();
+})
+}
+
+module.exports={ 
     signup,
     login,
     protect,
+    restrictTo,
 
 }

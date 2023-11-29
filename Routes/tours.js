@@ -11,7 +11,7 @@ router.get('/montly-plan/:year',tourController.getMontlyPlan);
 router.get('/',authController.protect,tourController.getAllTours);
 router.get('/:id',tourController.getTour);
 router.patch('/:id',tourController.updateTour);
-router.delete('/:id',tourController.deleteTour);
+router.delete('/:id',authController.protect,authController.restrictTo('admin','lead-guide'),tourController.deleteTour);
 
 
 

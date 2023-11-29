@@ -15,6 +15,12 @@ const User=new userSchema({
     lowercase:true, // its going to convert the email entered to lowercase
     validate:[validator.isEmail,'Please provide a valid email']
   },
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
+  },
+  
   password:{
     type:String,
     required:[true,'Please enter you password!'],
@@ -33,6 +39,7 @@ const User=new userSchema({
       message:"Passwords are not the same!"
     }
   },
+  
   photo:{
     type:String,
     
