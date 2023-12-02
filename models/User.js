@@ -50,6 +50,11 @@ const User=new userSchema({
 },
 passwordResetToken:String,
 passwordResetExpires:Date,
+active:{
+  type:Boolean,
+  default:true,
+  select:false
+}
 })
 User.pre('save',async function(next){
   //only run the function when the password is modeified
@@ -61,7 +66,7 @@ this.password=await bcrypt.hash(this.password,salt);//12 is the same as we but i
 this.passwordConfirm=undefined; // we only want it to the validation process and now we can remove it 
 next();
 
-})
+});
 User.pre('save', function(next){
 
   if(!this.isModified('password')||this.isNew) return next();
@@ -69,7 +74,12 @@ User.pre('save', function(next){
   
 next();
 
-})
+});
+User.pre(/^find/,function(next){ //to do the query midlware at every query start with find
+ // its a query midlware so this here refer to the current query
+ this.find({active:{$ne:false}}); // every query start with find will do this filter first before the query executed
+  next();
+});
 User.methods.correctPasswords= async function(candidatePassword,userPassword) //this called an instance function it will be available in every user document or instance
 {
 return await bcrypt.compare(candidatePassword,userPassword);
