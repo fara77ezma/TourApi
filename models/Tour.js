@@ -2,6 +2,7 @@ const mongoose=require('mongoose');
 const slugify=require('slugify');
 const validator=require('validator');
 const tourSchema=mongoose.Schema;
+const User=require('./User'); 
 
 const Tour=new tourSchema({
   name:{
@@ -86,7 +87,30 @@ const Tour=new tourSchema({
     type:Boolean,
     default:false,
      
-  }
+  },
+  startLocation:{ 
+    //GeoJson
+    type:{
+    type:String,
+    default:'Point',
+    enum:['Point'],
+    },
+    coordinates:[Number],
+    address:String,
+    description:String,
+  },
+  locations:[{ //emded documents always need to use array to embedd new document in the parent document
+    type:{
+      type:String,
+      default:'Point',
+      enum:['Point'],
+      },
+      coordinates:[Number],
+      address:String,
+      description:String,
+      day:Number
+  }],
+  guides:Array,
 },{       //options
 toJSON:{virtuals:true},
 toObject:{virtuals:true}
@@ -97,6 +121,11 @@ Tour.pre('save',function(next){
   this.slug=slugify(this.name,{lower:true});//this is refer ro the currently process document // slugify just put - instead of the space  // this.slug but the result from the slugify in the slug field
 
   next();// to get to the next (pre) midlware
+})
+Tour.pre('save',async function(next){
+  const guidesPromises=this.guides.map(async id=>await User.findById(id)); // here await returns array of promises not the documents directly because we use it inside map function which asynchronous function that returns arrayofpromises need to be awaits
+  this.guides=await Promise.all(guidesPromises); //await all promises in parallel
+  next();
 })
 Tour.post('save',function (doc,next){// post it execute after all the pre midelwares finished it doesn't get acess to (this) but get acess to finished document (doc)
 
