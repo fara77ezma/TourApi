@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const APIFeatures = require('../utils/apiFeatures');
 
 const deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
@@ -13,6 +14,79 @@ const deleteOne = (Model) =>
     });
   });
 
+const updateOne = (Model) =>
+  catchAsync(async (req, res, next) => {
+    const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
+      new: true, // to send the updated document rather than the original to the client
+      runValidators: true, // to run the validators we but in the schema again
+    });
+    if (!doc) {
+      return next(new AppError('No doc found with that ID', 404));
+    }
+    res.status(200).json({
+      status: 'sucess',
+      data: {
+        data: doc,
+      },
+    });
+  });
+
+const createOne = (Model) =>
+  catchAsync(async (req, res, next) => {
+    const doc = await Model.create(req.body);
+
+    res.status(200).json({
+      status: 'sucess',
+      data: {
+        data: doc,
+      },
+    });
+  });
+
+const getOne = (Model, popOptions) =>
+  catchAsync(async (req, res, next) => {
+    let query = Model.findById(req.params.id);
+    if (popOptions) query = query.populate(popOptions);
+    const doc = await query;
+
+    if (!doc) {
+      return next(new AppError('No document found with that ID', 404));
+    }
+    // console.log(doc.ratingsAvarage);
+    res.status(200).json({
+      status: 'sucess',
+      data: {
+        data: doc,
+      },
+    });
+  });
+
+const getAll = (Model) =>
+  catchAsync(async (req, res, next) => {
+    //To allow for nested get reviews on tour (hack)
+    let filter = {};
+    if (req.params.tourId) filter = { tourId: req.params.tourId };
+    // Build a query
+    const features = new APIFeatures(Model.find(filter), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    // execute query
+    const docs = await features.query;
+
+    res.status(200).json({
+      status: 'sucess',
+      results: docs.length,
+      data: {
+        data: docs,
+      },
+    });
+  });
 module.exports = {
   deleteOne,
+  updateOne,
+  createOne,
+  getOne,
+  getAll,
 };

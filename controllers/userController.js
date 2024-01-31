@@ -10,14 +10,6 @@ const filterObj = (obj, ...allowedFields) => {
   });
   return newObj;
 };
-const getALlUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-
-  res.status(200).json({
-    status: 'sucess',
-    data: users,
-  });
-});
 const updateMe = catchAsync(async (req, res, next) => {
   // 1) Create error if user POSTs a password data
   if (req.body.password || req.body.passwordConfirm) {
@@ -61,10 +53,19 @@ const deleteMe = catchAsync(async (req, res, next) => {
     data: null,
   });
 });
+const getAllUsers = factory.getAll(User);
+
+const getUser = factory.getOne(User);
 const deleteUser = factory.deleteOne(User);
+
+//Don't update passwords with this!
+const updateUser = factory.updateOne(User);
+
 module.exports = {
   updateMe,
   deleteMe,
-  getALlUsers,
+  getAllUsers,
   deleteUser,
+  updateUser,
+  getUser,
 };
