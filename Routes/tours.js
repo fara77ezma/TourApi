@@ -1,18 +1,30 @@
-const express=require('express');
-const router=express.Router();
-const tourController=require('../controllers/tourController');
-const authController=require('../controllers/authController');
+const express = require('express');
 
-router.post('/',tourController.createTour);
-router.get('/tour-stats',tourController.getTourStats);
-router.get('/montly-plan/:year',tourController.getMontlyPlan);
+const router = express.Router();
+const tourController = require('../controllers/tourController');
+const authController = require('../controllers/authController');
+const reviewRouter = require('./reviews');
 
+//const reviewController = require('../controllers/reviewController');
 
-router.get('/',authController.protect,tourController.getAllTours);
-router.get('/:id',tourController.getTour);
-router.patch('/:id',tourController.updateTour);
-router.delete('/:id',authController.protect,authController.restrictTo('admin','lead-guide'),tourController.deleteTour);
+router.use('/:tourId/reviews', reviewRouter); //it redirect to the reviewRouter just like we do in app.js (router is a middleware in itself so we could use (use method on it))
 
+router
+  .route('/')
+  .post(tourController.createTour)
+  .get(authController.protect, tourController.getAllTours);
 
+router.get('/tour-stats', tourController.getTourStats);
+router.get('/montly-plan/:year', tourController.getMontlyPlan);
 
-module.exports=router;
+router
+  .route('/:id')
+  .get(tourController.getTour)
+  .patch(tourController.updateTour)
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.deleteTour,
+  );
+
+module.exports = router;
