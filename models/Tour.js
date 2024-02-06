@@ -47,6 +47,7 @@ const Tour = new TourSchema(
       default: 4.5,
       min: [1, 'Rating must be above 1.0'], // with numbers and dates
       max: [5, 'Rating must be below 5.0'], // with numbers and dates
+      set: (val) => Math.round(val * 10) / 10, // set is called every time we put a new value or update the current value
     },
     ratingsQuantity: {
       type: Number,
@@ -127,6 +128,10 @@ const Tour = new TourSchema(
     toObject: { virtuals: true },
   },
 );
+Tour.index({ price: 1, ratingsAverage: -1 }); //its a combined index and also play the role of single index for each field separately so we don't have to Initialize an index for price or ratingsAverage again
+Tour.index({ slug: 1 });
+// 1 => for ascending sort, -1 => for descending sort
+
 // Document midlware : runs before .save() and .create() but not in any other functions
 Tour.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true }); // this is refer ro the currently process document // slugify just put - instead of the space  // this.slug but the result from the slugify in the slug field

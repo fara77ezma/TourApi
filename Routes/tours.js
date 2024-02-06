@@ -11,16 +11,29 @@ router.use('/:tourId/reviews', reviewRouter); //it redirect to the reviewRouter 
 
 router
   .route('/')
-  .post(tourController.createTour)
-  .get(authController.protect, tourController.getAllTours);
+  .post(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.createTour,
+  )
+  .get(tourController.getAllTours);
 
 router.get('/tour-stats', tourController.getTourStats);
-router.get('/montly-plan/:year', tourController.getMontlyPlan);
+router.get(
+  '/montly-plan/:year',
+  authController.protect,
+  authController.restrictTo('admin', 'lead-guide', 'guide'),
+  tourController.getMontlyPlan,
+);
 
 router
   .route('/:id')
   .get(tourController.getTour)
-  .patch(tourController.updateTour)
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    tourController.updateTour,
+  )
   .delete(
     authController.protect,
     authController.restrictTo('admin', 'lead-guide'),
