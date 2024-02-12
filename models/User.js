@@ -43,6 +43,7 @@ const User = new UserSchema({
 
   photo: {
     type: String,
+    default: 'default.jfif',
   },
   passwordChangedAt: {
     type: Date,

@@ -1,7 +1,45 @@
+const multer = require('multer');
+const sharp = require('sharp');
 const User = require('../models/User');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const factory = require('./factoryHandler');
+
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'public/img/users'); //null in first argument mean that there is no error //cb just like next in our middlewares
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.mimetype.split('/')[1];
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   },
+// });
+
+const multerStorage = multer.memoryStorage(); // its better to use it when we do processing on images it stores the image as a buffer
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images', 400), false); //400 for bad request
+  }
+};
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+const uploadUserPhoto = upload.single('photo'); //for only one field and only one image in it // req.file
+
+const resizeUserPhoto = (req, res, next) => {
+  if (!req.file) return next();
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+  sharp(req.file.buffer) // it returns an object so we can use chain of functions on it
+    .resize(500, 500) // resize the image
+    .toFormat('jpeg') // change all image to jpeg with 90 percent quality
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`); // store the image in our machine finally
+  next();
+};
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -22,10 +60,11 @@ const updateMe = catchAsync(async (req, res, next) => {
   }
 
   // 2) Filteres out unwanted fields names that are not allowed to be updated
-  const filteredObj = filterObj(req.body, 'name', 'email');
+  const filteredBody = filterObj(req.body, 'name', 'email');
+  if (req.file) filteredBody.photo = req.file.filename;
   // 3)Update user document
   // its ok to use findByIdAndUpdate when you don't deal with sensetive data like passwords
-  const user = await User.findByIdAndUpdate(req.user.id, filteredObj, {
+  const user = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true,
   });
@@ -73,4 +112,6 @@ module.exports = {
   updateUser,
   getUser,
   getMe,
+  uploadUserPhoto,
+  resizeUserPhoto,
 };

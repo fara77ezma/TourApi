@@ -2,7 +2,31 @@ const Tour = require('../models/Tour');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const factory = require('./factoryHandler');
+const multer = require('multer');
+const sharp = require('sharp');
 
+const multerStorage = multer.memoryStorage(); // its better to use it when we do processing on images it stores the image as a buffer
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images', 400), false); //400 for bad request
+  }
+};
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+//upload.array('images',5) // for only one field with multiple images // req.files
+const uploadTourImages = upload.fields([
+  // for  more than one field // req.files
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
+const resizeTourImages = (req, res, next) => {
+  console.log(req.files);
+  next();
+};
 const getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     // its a mongodb object but mongoose give it to us to deal with. everything about it in mongodb documantaion
@@ -163,4 +187,6 @@ module.exports = {
   getMontlyPlan,
   getToursWithin,
   getDistances,
+  uploadTourImages,
+  resizeTourImages,
 };

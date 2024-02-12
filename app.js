@@ -5,7 +5,6 @@ const helmet = require('helmet'); // setting security http headers
 const mongoSanitizie = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
-
 const app = express();
 const dotenv = require('dotenv');
 const morgan = require('morgan');
