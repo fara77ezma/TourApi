@@ -78,7 +78,74 @@ const getMontlyPlan = catchAsync(async (req, res, next) => {
     data: { plan },
   });
 });
+///tours-within/:distance/center/:latlng/unit/:unit
+const getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+  if (!lat || !lng) {
+    return next(
+      new AppError(
+        'Please provide latitur and longitude in the format of lat,lng.',
+        400,
+      ),
+    );
+  }
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }, //in geospatial it takes the lng first and the lat second
+  });
+  res.status(200).json({
+    status: 'sucess',
+    results: tours.length,
+    data: {
+      data: tours,
+    },
+  });
+});
 
+const getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+  if (!lat || !lng) {
+    return next(
+      new AppError(
+        'Please provide latitur and longitude in the format of lat,lng.',
+        400,
+      ),
+    );
+  }
+
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        //its always valid as the first stage in geospatial pipeline (it needs at least one index used in geospatial and if its only one used in geospatial it use it by default to
+        // calculate  the distance but if it more than one we  specify the attribute we want to use to calculate the distance by using the (key)
+        near: {
+          //its a mandatory field in $geoNea
+          type: 'Point',
+          coordinates: [lng * 1, lat * 1],
+        },
+        distanceField: 'distance', // the name of the field we will store all the calculations in it //its a mandatory field in $geoNear
+        distanceMultiplier: multiplier, // optional field (specified a number to multiply to all distance fields )
+      },
+    },
+    {
+      $project: {
+        // to specify only the fields you need to appear in the result
+        distance: 1,
+        name: 1,
+      },
+    },
+  ]);
+  res.status(200).json({
+    status: 'sucess',
+    results: distances.length,
+    data: {
+      data: distances,
+    },
+  });
+});
 const createTour = factory.createOne(Tour);
 
 const getAllTours = factory.getAll(Tour);
@@ -94,4 +161,6 @@ module.exports = {
   deleteTour,
   getTourStats,
   getMontlyPlan,
+  getToursWithin,
+  getDistances,
 };

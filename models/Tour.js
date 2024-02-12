@@ -130,6 +130,8 @@ const Tour = new TourSchema(
 );
 Tour.index({ price: 1, ratingsAverage: -1 }); //its a combined index and also play the role of single index for each field separately so we don't have to Initialize an index for price or ratingsAverage again
 Tour.index({ slug: 1 });
+Tour.index({ startLocation: '2dsphere' }); //index used because of geospatial
+
 // 1 => for ascending sort, -1 => for descending sort
 
 // Document midlware : runs before .save() and .create() but not in any other functions
@@ -182,9 +184,9 @@ Tour.post(/^find/, function (docs, next) {
 });
 
 // aggregate midlware
-Tour.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { seccretTour: { $ne: true } } }); // this.pipline is an array , unshift() is js function to add element in the start of the array
-  console.log(this.pipeline());
-  next();
-});
+// Tour.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { seccretTour: { $ne: true } } }); // this.pipline is an array , unshift() is js function to add element in the start of the array
+//   console.log(this.pipeline());
+//   next();
+// });
 module.exports = mongoose.model('Tour', Tour);
