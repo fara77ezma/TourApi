@@ -79,9 +79,9 @@ const server = app.listen(3000);
 
 // 3)ROUTES
 app.use('/api/users', require('./Routes/users'));
-
 app.use('/api/tours', require('./Routes/tours'));
 app.use('/api/reviews', require('./Routes/reviews'));
+app.use('/api/bookings', require('./Routes/bookings'));
 
 app.all('*', (req, res, next) => {
   // all -> is to handle all http requests types , * -> is to handle all the url would pass to it

@@ -4,7 +4,7 @@ const { promisify } = require('util');
 //const { decode } = require('querystring');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 
 const User = require('../models/User');
 
@@ -42,6 +42,8 @@ const signup = catchAsync(async (req, res, next) => {
     role: req.body.role,
     passwordChangedAt: req.body.passwordChangedAt,
   });
+  const url = `${req.protocol}://${req.get('host')}`;
+  await new Email(newUser, url).sendWelcome();
   createSendToken(newUser, 201, res);
 });
 
@@ -132,16 +134,10 @@ const forgetPassword = catchAsync(async (req, res, next) => {
   const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false }); // to turn off all validators in the schema
   // 3)Send it to user's email
-  const resetURL = `${req.protocol}://${req.get(
-    'host',
-  )}/api/users/resetPassword/${resetToken}`;
-  const message = `Forget your password? Submit a PATCH request with your new password and password confirm to: ${resetURL}.\n if you didn't forget your password, please ignore this email!`;
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Your password reset token  (valid for 10 min)',
-      message,
-    });
+    const resetURL = `${req.protocol}://${req.get('host')}/api/users/resetPassword/${resetToken}`;
+
+    await new Email(user, resetURL).sendPasswordReset();
     res.status(200).json({
       status: 'sucess',
       message: 'Token send to email!',

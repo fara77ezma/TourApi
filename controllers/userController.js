@@ -30,16 +30,16 @@ const upload = multer({
 
 const uploadUserPhoto = upload.single('photo'); //for only one field and only one image in it // req.file
 
-const resizeUserPhoto = (req, res, next) => {
+const resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-  sharp(req.file.buffer) // it returns an object so we can use chain of functions on it
+  await sharp(req.file.buffer) // it returns an object so we can use chain of functions on it
     .resize(500, 500) // resize the image
     .toFormat('jpeg') // change all image to jpeg with 90 percent quality
     .jpeg({ quality: 90 })
     .toFile(`public/img/users/${req.file.filename}`); // store the image in our machine finally
   next();
-};
+});
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};

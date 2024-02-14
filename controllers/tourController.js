@@ -1,9 +1,9 @@
+const multer = require('multer');
+const sharp = require('sharp');
 const Tour = require('../models/Tour');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const factory = require('./factoryHandler');
-const multer = require('multer');
-const sharp = require('sharp');
 
 const multerStorage = multer.memoryStorage(); // its better to use it when we do processing on images it stores the image as a buffer
 const multerFilter = (req, file, cb) => {
@@ -23,10 +23,31 @@ const uploadTourImages = upload.fields([
   { name: 'imageCover', maxCount: 1 },
   { name: 'images', maxCount: 3 },
 ]);
-const resizeTourImages = (req, res, next) => {
-  console.log(req.files);
+const resizeTourImages = catchAsync(async (req, res, next) => {
+  if (!req.files.imageCover || !req.files.images) return next();
+  //Process Cover image
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333) // 3:2 resize
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+  //Process Images
+  req.body.images = [];
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const filename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+      await sharp(file.buffer)
+        .resize(2000, 1333) // 3:2 resize
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${filename}`);
+      req.body.images.push(filename);
+    }),
+  );
+
   next();
-};
+});
 const getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     // its a mongodb object but mongoose give it to us to deal with. everything about it in mongodb documantaion
