@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 const mongoose = require('mongoose');
-const Tour = require('./Tour');
+// const Tour = require('./Tour');
 
 const BookingSchema = mongoose.Schema;
 const Booking = new BookingSchema(

@@ -26,22 +26,26 @@ exports.createCustomer = catchAsync(async (req, res, next) => {
 });
 
 exports.getCheckout = catchAsync(async (req, res, next) => {
+  const tour = await Tour.findById(req.params.tourId);
   const charge = await stripe.charges.create({
-    amount: 1000, // Amount in cents
+    amount: tour.price * 100, // Amount in cents
     currency: 'usd',
     description: 'Book new Tour',
     customer: req.customer,
   });
   if (charge.status === 'succeeded') {
-    await Booking.create({
+    const booking = await Booking.create({
       tourId: req.params.tourId,
       userId: req.user.id,
-      price: 10,
+      price: tour.price,
     });
     res.status(201).json({
       status: 'sucess',
       message:
         'Payment successful. The money has been transferred successfully.',
+      data: {
+        data: booking,
+      },
     });
   } else {
     res.status(402).json({
@@ -66,6 +70,8 @@ exports.getMyTours = catchAsync(async (req, res, next) => {
     },
   });
 });
+exports.createNewBooking = factory.createOne(Booking);
 exports.getAllBookings = factory.getAll(Booking);
 exports.getOneBooking = factory.getOne(Booking);
 exports.deleteOneBooking = factory.deleteOne(Booking);
+exports.updateOneBooking = factory.updateOne(Booking);

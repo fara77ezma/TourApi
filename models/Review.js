@@ -93,7 +93,6 @@ Review.pre(/^findOneAnd/, async function (next) {
 Review.post(/^findOneAnd/, async function () {
   //this.r=await this.findOne(); //does NOT work here, query has already executed
   await this.r.constructor.calcAverageRating(this.r.tourId);
-  console.log('test2');
 });
 
 //Document MiddleWare

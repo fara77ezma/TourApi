@@ -5,17 +5,24 @@ const router = express.Router(); //  mergeParams: true => to make the router get
 const bookingController = require('../controllers/bookingController');
 const authController = require('../controllers/authController');
 
-router.get(
+router.use(authController.protect);
+router.post(
   '/book-tour/:tourId',
-  authController.protect,
+
   bookingController.createCustomer,
   bookingController.getCheckout,
 );
-router.get('/my-tours', authController.protect, bookingController.getMyTours);
-router.route('/').get(authController.protect, bookingController.getAllBookings);
+router.get('/my-tours', bookingController.getMyTours);
+router.use(authController.restrictTo('admin', 'lead-guide'));
+
+router
+  .route('/')
+  .get(bookingController.getAllBookings)
+  .post(bookingController.createNewBooking);
 router
   .route('/:id')
-  .get(authController.protect, bookingController.getOneBooking)
-  .delete(authController.protect, bookingController.deleteOneBooking);
+  .get(bookingController.getOneBooking)
+  .delete(bookingController.deleteOneBooking)
+  .patch(bookingController.updateOneBooking);
 
 module.exports = router;

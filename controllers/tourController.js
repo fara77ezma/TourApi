@@ -196,8 +196,8 @@ const createTour = factory.createOne(Tour);
 const getAllTours = factory.getAll(Tour);
 const getTour = factory.getOne(Tour, { path: 'reviews' });
 const updateTour = factory.updateOne(Tour);
-
 const deleteTour = factory.deleteOne(Tour);
+
 module.exports = {
   createTour,
   getAllTours,

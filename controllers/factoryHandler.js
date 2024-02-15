@@ -5,6 +5,16 @@ const APIFeatures = require('../utils/apiFeatures');
 
 const deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
+    const model = await Model.findById(req.params.id);
+    if (
+      model.userId &&
+      model.userId !== req.user.id &&
+      req.user.role === 'user'
+    )
+      return next(
+        new AppError("You don't have permission to perform this action", 403),
+      );
+
     const doc = await Model.findByIdAndDelete(req.params.id);
     if (!doc) {
       return next(new AppError('No document found with that ID', 404));
@@ -16,6 +26,15 @@ const deleteOne = (Model) =>
 
 const updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
+    const model = await Model.findById(req.params.id);
+    if (
+      model.userId &&
+      model.userId !== req.user.id &&
+      req.user.role === 'user'
+    )
+      return next(
+        new AppError("You don't have permission to perform this action", 403),
+      );
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true, // to send the updated document rather than the original to the client
       runValidators: true, // to run the validators we but in the schema again

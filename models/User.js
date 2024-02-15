@@ -56,6 +56,7 @@ const User = new UserSchema({
     select: false,
   },
 });
+
 User.pre('save', async function (next) {
   // only run the function when the password is modeified
   if (!this.isModified('password')) return next();
