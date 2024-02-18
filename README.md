@@ -5,12 +5,12 @@ Hey fellow explorer! 🎒 Ready to embark on a coding journey through our Tours 
 ## Table of Contents
 
 - [Features](#features)
+- [Technologies Used](#technologies-used)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-- [Technologies Used](#technologies-used)
-- [Usage](#usage)
 - [API Collections](#api-collections)
+- [Usage](#usage)
 
 ## Features
 
