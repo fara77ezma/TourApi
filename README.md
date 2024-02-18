@@ -72,19 +72,14 @@ Alright, time to unleash the power of Tours API! 🚀 Below are some quick steps
 
    - Head over to our [API Documentation](https://documenter.getpostman.com/view/28990301/2sA2r81j3D) for a detailed guide on available endpoints and how to use them.
 
-2. **Get Your API Key:**
-
-   - To access certain features and ensure secure interactions, make sure to grab your API key. You can find the details in the documentation.
-
-3. **Test Endpoints:**
+2. **Test Endpoints:**
 
    - Use tools like Postman or your favorite API client to test various endpoints. Play around with creating tours, booking adventures, and managing your user profile.
 
-4. **Craft Your Adventure:**
+3. **Craft Your Adventure:**
 
    - Dive into the API collections like Users, Tours, and Reviews. Create your own tech-infused travel tales by interacting with these collections.
 
-5. **Join the Community:**
-   - Connect with fellow developers and adventurers in our community forums. Share your experiences, ask questions, and get ready to embark on coding adventures together!
 
-Now go ahead, explore the API, and let the coding journey begin! Happy coding! 🌟
+
+Now go ahead, explore the API, and let the coding journey begin!🌟
