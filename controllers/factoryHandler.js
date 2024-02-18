@@ -8,7 +8,7 @@ const deleteOne = (Model) =>
     const model = await Model.findById(req.params.id);
     if (
       model.userId &&
-      model.userId !== req.user.id &&
+      model.userId.id !== req.user.id &&
       req.user.role === 'user'
     )
       return next(
@@ -29,12 +29,14 @@ const updateOne = (Model) =>
     const model = await Model.findById(req.params.id);
     if (
       model.userId &&
-      model.userId !== req.user.id &&
+      model.userId.id !== req.user.id &&
       req.user.role === 'user'
-    )
+    ) {
+      console.log(model.userId, ' ', req.user.id);
       return next(
         new AppError("You don't have permission to perform this action", 403),
       );
+    }
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true, // to send the updated document rather than the original to the client
       runValidators: true, // to run the validators we but in the schema again

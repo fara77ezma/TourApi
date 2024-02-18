@@ -14,7 +14,7 @@ class APIFeatures {
 
     // 1B) Advanced Filtering
     let queryStr = JSON.stringify(queryObj); // cast the object to a string
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`); // \b to get the same world without any characters before it or after it // g for getting more than one operator if there is
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`); // \b to get the same word without any characters before it or after it // g for getting more than one operator if there is
 
     // this is what it should looklike to deal withit{ difficulty: 'easy', duration: { '$gte': '5' } }
     this.query = this.query.find(JSON.parse(queryStr)); // JSON.parse cast the string to an object
