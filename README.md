@@ -36,7 +36,7 @@ Hey fellow explorer! 🎒 Ready to embark on a coding journey through our Tours 
 1. Clone this repository to your local machine:
 
 ```
-git clone https://github.com/fara77ezma/TourApi/tree/main
+git clone https://github.com/fara77ezma/TourApi/
 ```
 
 2. Set up the necessary dependencies:
