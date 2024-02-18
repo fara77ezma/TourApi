@@ -10,9 +10,7 @@ Hey there, fellow adventurer! 🎒 Ready to dive into the magic of our Tours API
   - [Installation](#installation)
 - [Usage](#usage)
 - [API Collections](#api-collections)
-- [Authentication](#authentication)
-- [Contributing](#contributing)
-- [License](#license)
+- [API Documentation](#api-documentation)
 
 ## Features
 
@@ -54,9 +52,20 @@ npm install
 npm run start:prod
 ```
 
-- The blog runs on localhost://3000
+- The application runs on localhost://3000
+
+## API Collections
+
+Here's a sneak peek into the magic collections that make our API tick:
+
+- **Users Collection:** Manage user tasks from registration to profile management.
+- **Tours Collection:** Govern tour operations – creation, retrieval, and modification.
+- **Bookings Collection:** Facilitate tour bookings and retrieval of booked tours.
+- **Reviews Collection:** Handle user reviews for tours.
+- **Authentication Collection:** Ensure secure user interactions through registration, login, and token management.
 
 ## API Documentation
 
 Ready to embark on your coding journey?
+
 Explore the API using our [API Documentation](https://documenter.getpostman.com/view/28990301/2sA2r81j3D) and start crafting your own travel tales! 🌟
