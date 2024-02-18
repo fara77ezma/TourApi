@@ -58,4 +58,5 @@ npm run start:prod
 
 ## API Documentation
 
-Ready to embark on your coding journey? Explore the API using our [API Documentation](https://documenter.getpostman.com/view/28990301/2sA2r81j3D) and start crafting your own travel tales! 🌟
+Ready to embark on your coding journey?
+Explore the API using our [API Documentation](https://documenter.getpostman.com/view/28990301/2sA2r81j3D) and start crafting your own travel tales! 🌟
