@@ -1,4 +1,4 @@
-# Welcome to Tours 'n' Travels API! 🌍✨
+# Welcome to Tours API! 🌍✨
 
 Hey there, fellow adventurer! 🎒 Ready to dive into the magic of our Tours API? This is where all the behind-the-scenes action happens, making your travel dreams a reality. From creating tours to booking your next adventure, we've got it covered!
 
@@ -58,6 +58,4 @@ npm run start:prod
 
 ## API Documentation
 
-Explore the API using the provided documentation.
-
-- [API Documentation](https://documenter.getpostman.com/view/28990301/2sA2r81j3D)
+Ready to embark on your coding journey? Explore the API using our [API Documentation](https://documenter.getpostman.com/view/28990301/2sA2r81j3D) and start crafting your own travel tales! 🌟
