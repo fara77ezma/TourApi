@@ -57,7 +57,7 @@ const login = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ email }).select('+password'); // select password explicitly
   // const correct= await user.correctPasswords(password,user.password);
-  console.log(user);
+ // console.log(user);
   if (
     !user ||
     !(await user.correctPasswords(
